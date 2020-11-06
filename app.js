@@ -8,18 +8,21 @@ const templating = require('./templating');
 
 const rest = require('./rest');
 
+const { parseUser } = require('./utils/tools')
+
 const app = new Koa();
 
 
-// log request URL:
+// parse user from cookie:
 app.use(async (ctx, next) => {
+  ctx.state.user = parseUser(ctx.cookies.get('name') || '');
   await next();
 });
 
 // static file support:
 let staticFiles = require('./static-files');
-app.use(staticFiles('/static/', __dirname + '/static'));
 app.use(staticFiles('/public/', __dirname + '/public'));
+app.use(staticFiles('/static/', __dirname + '/static'));
 
 // parse request body:
 app.use(bodyParser({ enableTypes: ['json', 'form', 'text'] }));
@@ -30,10 +33,11 @@ app.use(templating('views', {
   watch: true
 }));
 
-app.use(templating('public', {
-  noCache: true,
-  watch: true
-}));
+// 使用swagger
+// app.use(templating('public', {
+//   noCache: true,
+//   watch: true
+// }));
 
 // bind .rest() for ctx:
 app.use(rest.restify());
@@ -41,18 +45,6 @@ app.use(rest.restify());
 // add controllers:
 app.use(controller());
 
-// const router = require('koa-router')();
-// const mime = require('mime');
-// const fs = require('mz/fs');
-
-// router.get('/swagger', async (ctx, next) => {
-//   let rpath = ctx.request.path;
-//   ctx.response.type = mime.getType(__dirname + '/public/index.html');
-//   ctx.response.body = await fs.readFile(__dirname + '/public/index.html');
-//   await next();
-// });
-
-// app.use(router.routes());
 
 app.listen(3000);
 console.log('app started at port 3000...');
