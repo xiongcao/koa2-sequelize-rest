@@ -4,14 +4,13 @@
     <div class="col-md-6">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title"><span class="glyphicon glyphicon-user"></span> Please sign in</h3>
-          <button type="button" class="btn btn-danger">Signout</button>
+          <h3 class="panel-title"><span class="glyphicon glyphicon-user"></span> Please register</h3>
         </div>
         <div class="panel-body">
           <form id="userForm">
             <div class="form-group">
               <label>Name</label>
-              <input type="text" name="name" class="form-control" placeholder="你的昵称" value="xiongchao">
+              <input type="text" name="name" class="form-control" placeholder="你的账号" value="xiaoxiong">
               <p class="help-block">Your user name</p>
             </div>
             <div class="form-group">
@@ -19,7 +18,7 @@
               <input type="text" name="password" class="form-control" placeholder="你的密码" value="123456">
               <p class="help-block">Your user password</p>
             </div>
-            <button type="button" class="btn btn-primary submit">Sign In</button>
+            <button type="button" class="btn btn-primary submit">Confirm</button>
           </form>
         </div>
       </div>
@@ -28,14 +27,13 @@
 </div>
 
 <script>
-  const $signout = $('.btn-danger');
   const $submit = $('.submit');
   const $userForm = $('#userForm');
   const $helpBlock = $('.help-block');
   const $username = $('input[name=name]');
   const $password = $('input[name=password]');
-
-  $submit.on('click', function (e) {
+  
+  $submit.on('click', function(e) {
     e.preventDefault();
     const username = $username.val();
     const password = $password.val();
@@ -43,11 +41,8 @@
       return false;
     }
     $.ajax({
-      url: '/api/signin',
+      url: '/api/register',
       type: 'post',
-      xhrFields: {
-        withCredentials: true
-      },
       data: $userForm.serialize(),
       success: (res) => {
         alert(res.msg)
@@ -55,22 +50,7 @@
     })
   })
 
-  $signout.on('click', function () {
-    $.ajax({
-      url: '/api/signout',
-      type: 'get',
-      success: (res) => {
-        alert(res.msg)
-      }
-    })
-  })
-
-  $.ajax({
-    url: '/api/getCookies',
-    type: 'get'
-  })
-
-  function valiForm(username, password) {
+  function valiForm (username, password) {
     if (!username || !password) {
       if (!username) {
         $helpBlock.eq(0).text('请输入账号').css({ color: 'red' });

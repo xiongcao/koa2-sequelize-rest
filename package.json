@@ -5,14 +5,17 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "supervisor --use_strict app.js"
+    "start": "supervisor --use_strict app.js",
+    "dev": "supervisor --use_strict app.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "crypto": "^1.0.1",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^9.4.0",
+    "koa-session": "^6.1.0",
     "mime": "^2.4.6",
     "mysql2": "^2.2.5",
     "mz": "^2.7.0",

@@ -5,6 +5,7 @@ module.exports = {
     this.code = code || 'internal:unknown_error';
     this.message = message || '';
   },
+  
   restify: (pathPrefix) => {
     pathPrefix = pathPrefix || '/api/';
     return async (ctx, next) => {
@@ -18,7 +19,7 @@ module.exports = {
         try {
           await next();
         } catch (e) {
-          ctx.response.status = 400;
+          ctx.response.status = 500;
           ctx.response.type = 'application/json';
           ctx.response.body = {
             code: e.code || 'internal:unknown_error',
@@ -29,5 +30,19 @@ module.exports = {
         await next();
       }
     };
-  }
+  },
+
+  checkLoginStatus: () => {
+    return async (ctx, next) => {
+      ctx.isLogin = async () => {
+        const sessionId = ctx.session.userId;
+        if (!sessionId) {
+          ctx.rest(null, -1, '未登录')
+          return false;
+        }
+        return true
+      };
+      await next();
+    }
+  },
 };

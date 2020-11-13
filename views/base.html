@@ -9,28 +9,29 @@
   <script src="/static/js/jquery.js"></script>
   <script src="/static/js/bootstrap.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <style>
+    header {
+      background-color: #6f5499;
+      color: #cdbfe3;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    footer {
+      position: fixed;
+      width: 100%;
+      padding: 20px 0;
+      background-color: #ddd;
+      text-align: center;
+      bottom: 0;
+    }
+  </style>
 </head>
 
 <body>
-  <div id="important" style="color:#cdbfe3; background-color:#6f5499; padding:30px 0; margin:-20px 0 20px 0;">
-    <div class="container">
-      <h1 style="color:#fff; font-size:60px">Getting started with REST API!</h1>
-      <p style="font-size:24px; line-height:48px">Learn JavaScript, Node.js, REST, WebSocket, npm, koa2, nunjucks,
-        babel, etc. at test.com.</p>
-    </div>
-  </div>
+  <header>#HEADER</header>
   {% block main %} {% endblock %}
-  <footer style="background-color:#ddd; padding: 20px 0;">
-    <div class="container">
-      <p>
-        <a target="_blank" href="http://www.test.com">Website</a> -
-        <a target="_blank" href="https://github.com/michaelliao/learn-javascript">GitHub</a> -
-        <a target="_blank" href="http://weibo.com/test">Weibo</a>
-      </p>
-      <p>Code licensed <a target="_blank"
-          href="https://github.com/michaelliao/learn-javascript/blob/master/LICENSE">Apache</a>.</p>
-    </div>
-  </footer>
+  <footer>#FOOTER</footer>
 </body>
 
 </html>

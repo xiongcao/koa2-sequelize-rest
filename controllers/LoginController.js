@@ -1,29 +1,67 @@
-var index = 0;
+const UserService = require('../service/UserService');
+const APIError = require('../rest').APIError;
+
+const crypto = require('crypto');
+const hash = crypto.createHash('md5');
 
 module.exports = {
   'GET /signin': async (ctx, next) => {
-    let names = '甲乙丙丁戊己庚辛壬癸';
-    let name = names[index % 10];
-    ctx.render('signin.html', {
-      name: `路人${name}`
-    });
+    ctx.render('signin.html');
   },
 
-  'POST /signin': async (ctx, next) => {
-    index++;
-    let name = ctx.request.body.name || '路人甲';
-    let user = {
-      id: index,
-      name: name,
-      image: index % 10
-    };
-    let value = Buffer.from(JSON.stringify(user)).toString('base64');
-    ctx.cookies.set('name', value);
-    ctx.response.redirect('/');
+  'GET /register': async (ctx, next) => {
+    ctx.render('register.html');
   },
 
-  'GET /signout': async (ctx, next) => {
-    ctx.cookies.set('name', '');
-    ctx.response.redirect('/signin');
+  'POST /api/signin': async (ctx, next) => {
+    const { name, password } = ctx.request.body;
+    let md5Password = hash.update(password).digest('hex'); // 加密后的密码
+    const user = await UserService.findUserByNameAndPassword({ name, password: md5Password });
+    if (user) {
+      // 设置session
+      ctx.session.userId = user.id;
+      ctx.session.userName = user.name;
+      ctx.rest(null, 0, '登录成功');
+    } else {
+      ctx.rest(user, 1, '用户名或密码错误');
+    }
+  },
+
+  'POST /api/register': async (ctx, next) => {
+    const { name, password } = ctx.request.body;
+    const user = await UserService.findUserByName(name);
+    if (user) {
+      ctx.rest(user, 1, '注册失败，该用户名已被使用');
+    } else {
+      let md5Password = hash.update(password).digest('hex'); // 加密后的密码
+      // 保存用户信息
+      const u = await UserService.createUser({ name, password: md5Password });
+      if (u) {
+        ctx.rest(null, 0, '注册成功');
+      } else {
+        ctx.rest(null, 1, '注册失败');
+      }
+    }
+  },
+
+  'GET /api/getCookies': async (ctx, next) => {
+    const islogin = ctx.session.userId;
+    if (islogin) {
+      ctx.rest(null, 0, '登录成功');
+    } else {
+      ctx.rest(null, 1, '登录失败');
+    }
+  },
+
+  'GET /api/isLogin': async (ctx, next) => {
+    if (await ctx.isLogin()) {
+      ctx.rest(null, 0, 'hh')
+    }
+  },
+
+  'GET /api/signout': async (ctx, next) => {
+    ctx.cookies.set('token', '');
+    ctx.session = {};
+    ctx.rest(null, 0, '退出成功');
   }
 };

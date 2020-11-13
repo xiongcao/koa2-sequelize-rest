@@ -1,5 +1,7 @@
 const Koa = require('koa');
 
+const session = require('koa-session');
+
 const bodyParser = require('koa-bodyparser');
 
 const controller = require('./controller');
@@ -8,14 +10,26 @@ const templating = require('./templating');
 
 const rest = require('./rest');
 
-const { parseUser } = require('./utils/tools')
+// const { parseUser } = require('./utils/tools')
 
 const app = new Koa();
 
+app.keys = ['some secret hurr']; // 随机字符串，加密cookie
+app.use(session({
+  key: 'token', // cookie的键名
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 过期时间 7d
+  autoCommit: true,
+  overwrite: true, // 是否覆盖cookie
+  httpOnly: true, // 是否JS无法获取cookie
+  signed: true, // 是否生成cookie的签名，防止浏览器暴力篡改
+  rolling: false,
+  secure: false, // true：则只应通过被 HTTPS 协议加密过的请求发送给服务端 - 当我们在http协议中，试图接受设置 Secure 为 true 的 Cookie 时，服务端会报错
+  sameSite: null
+}, app));
 
 // parse user from cookie:
 app.use(async (ctx, next) => {
-  ctx.state.user = parseUser(ctx.cookies.get('name') || '');
+  // ctx.state.user = parseUser(ctx.cookies.get('name') || '');
   await next();
 });
 
@@ -41,10 +55,11 @@ app.use(templating('views', {
 
 // bind .rest() for ctx:
 app.use(rest.restify());
+app.use(rest.checkLoginStatus());
 
 // add controllers:
 app.use(controller());
 
 
 app.listen(3000);
-console.log('app started at port 3000...');
+console.log('app started at http://localhost:3000');
