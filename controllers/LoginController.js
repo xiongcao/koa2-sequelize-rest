@@ -16,7 +16,7 @@ module.exports = {
   'POST /api/signin': async (ctx, next) => {
     const { name, password } = ctx.request.body;
     let md5Password = hash.update(password).digest('hex'); // 加密后的密码
-    const user = await UserService.findUserByNameAndPassword({ name, password: md5Password });
+    const user = await UserService.findUserByNameAndPassword(name, md5Password);
     if (user) {
       // 设置session
       ctx.session.userId = user.id;
@@ -53,9 +53,10 @@ module.exports = {
     }
   },
 
+  // 检测是否登录
   'GET /api/isLogin': async (ctx, next) => {
     if (await ctx.isLogin()) {
-      ctx.rest(null, 0, 'hh')
+      ctx.rest(null, 0, '已登录');
     }
   },
 
