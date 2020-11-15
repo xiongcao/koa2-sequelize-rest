@@ -13,6 +13,10 @@ module.exports = {
     const data = pageTable(products, page, size, count);
     ctx.rest(data);
   },
+  'GET /api/productAll': async (ctx, next) => {
+    const data = await ProductService.getProductAndBrandAll();
+    ctx.rest(data);
+  },
   'POST /api/product': async (ctx, next) => {
     ctx.request.body.brandId = '5d0abdf9-161f-40bc-8dc8-00d1537589df';
     const p = await ProductService.createProduct(ctx.request.body);

@@ -1,6 +1,6 @@
 const model = require('../db/model');
 
-const { Product, Brand } = model;
+const { Product, Brand, DB } = model;
 
 Product.belongsTo(Brand, {
   foreignKey: 'brandId',
@@ -24,11 +24,15 @@ module.exports = {
           ]
         }
       ],
-      raw: false // 开启原生查询，原生查询支持的功能更多，自定义更强
+      raw: true // 开启原生查询，不需要转换成实例对象
     });
   },
   getProductCount: async () => {
     return await Product.count();
+  },
+  getProductAndBrandAll: async () => {
+    const sql = `SELECT p.id as pid, p.name as pname, p.price, b.id as bid, b.name as bname FROM product AS p LEFT JOIN brand AS b ON b.id = p.brand_id`;
+    return await DB.query(sql, { type: DB.QueryTypes.SELECT });
   },
   getProduct: async (id) => {
     return await Product.findAll({

@@ -14,6 +14,8 @@ for (let f of js_files) {
   module.exports[name] = require(__dirname + '/../models/' + f);
 }
 
+module.exports.DB = db.sequelize;
+
 module.exports.sync = new Promise((resolve) => {
   resolve(db.sync());
 })
