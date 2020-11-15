@@ -5,7 +5,7 @@ const testConfig = './config-test.js';
 const fs = require('fs');
 
 var config = null;
-if (process.env.NODE_ENV === 'test') {
+if (process.env.NODE_ENV === 'development') {
   config = Object.assign(require(defaultConfig), require(testConfig));
 } else {
   config = require(defaultConfig);

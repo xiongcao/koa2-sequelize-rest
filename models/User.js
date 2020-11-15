@@ -5,7 +5,7 @@ module.exports = db.defineModel('users', {
   password: db.STRING(100),
   email: {
     type: db.STRING(100),
-    // defaultValue: 'test@qq.com',
+    defaultValue: 'test@qq.com',
     allowNull: false
   },
   gender: {

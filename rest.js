@@ -5,7 +5,29 @@ module.exports = {
     this.code = code || 'internal:unknown_error';
     this.message = message || '';
   },
+
+  /**
+   * 封装分页数据
+   * @content 列表数据集合；
+   * @page 当前页码；
+   * @size 每页显示多少条数据；
+   * @totalCount 总数量；
+   */
+  pageTable: (content, page, size, totalCount) => {
+    return {
+      content: content || [],
+      page,
+      size,
+      currentPage: page,
+      currentCount: content.length || 0,
+      totalPages: Math.ceil(totalCount / size),
+      totalCount
+    }
+  },
   
+  /**
+   * 中间件：封装最后结果
+   */
   restify: (pathPrefix) => {
     pathPrefix = pathPrefix || '/api/';
     return async (ctx, next) => {
@@ -32,6 +54,9 @@ module.exports = {
     };
   },
 
+  /**
+   * 中间件：校验接口是否需要登录
+   */
   checkLoginStatus: () => {
     return async (ctx, next) => {
       ctx.isLogin = async () => {

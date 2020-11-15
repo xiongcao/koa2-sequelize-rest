@@ -4,9 +4,12 @@
 
   $(function () {
     var vm = new Vue({
-      el: '#product-list',
+      el: '.container',
       data: {
-        products: []
+        products: [],
+        page: 0,
+        size: 2,
+        totalPage: 0
       },
       methods: {
         deleteProduct: function (id) {
@@ -15,20 +18,30 @@
           $.ajax({
             type: 'delete',
             dataType: 'json',
-            url: '/api/products/' + id
+            url: '/api/product/' + id
           }).done(function (res) {
             getProduct()
           }).fail(function (jqXHR, textStatus) {
             // Not 200:
             alert('Error: ' + jqXHR.status);
           });
+        },
+        handlePage: (page) => {
+          if (page >= 0 && page < vm.totalPage) {
+            vm.page = page;
+            getProduct()
+          }
         }
       }
     });
 
     function getProduct(){
-      $.getJSON('/api/products').done(function (res) {
-        vm.products = res.data;
+      $.getJSON('/api/product', {
+        page: vm.page,
+        size: vm.size
+      }).done(function (res) {
+        vm.products = res.data.content;
+        vm.totalPage = res.data.totalPages;
       }).fail(function (jqXHR, textStatus) {
         alert('Error: ' + jqXHR.status);
       });
@@ -49,7 +62,7 @@
         type: 'post',
         dataType: 'json',
         contentType: 'application/json',
-        url: '/api/products',
+        url: '/api/product',
         data: JSON.stringify(product)
       }).done(function (res) {
         vm.products.push(res.data);
@@ -97,6 +110,33 @@
             </tbody>
           </table>
         </div>
+        <nav aria-label="...">
+          <ul class="pagination">
+            <li :class="page === 0 ? 'page-item disabled' : 'page-item'"
+              @click="handlePage(page - 1)"
+            >
+              <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+            </li>
+            <li 
+              class="page-item" 
+              :class="page === i ? 'active' : ''"
+              aria-current="page" 
+              v-for="(p, i) in Array(totalPage).fill(1)" :key='i'
+              @click="handlePage(i)"
+            >
+              <span class="page-link" href="#" v-if="page === i">
+                <span v-text="i+1"></span>
+                <span class="sr-only">(current)</span>
+              </span>
+              <a class="page-link" href="#" v-else v-text="i+1"></a>
+            </li>
+            <li :class="(page + 1) === totalPage ? 'page-item disabled' : 'page-item'"
+              @click="handlePage(page + 1)"
+            >
+              <a class="page-link" href="#">Next</a>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
     <div class="col-md-4">

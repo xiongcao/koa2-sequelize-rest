@@ -34,6 +34,26 @@ function defineModel(name, attributes) {
       };
     }
   }
+
+  /**
+   * primaryKey： 主键；
+   * unique： 唯一键
+   * type：数据类型；
+   * allowNull： true 允许为空，false 不允许为空；
+   * autoIncrement：创建 auto_incrementing 整数列；
+   * field：指定自定义列名称（数据库中字段名称）；
+   * 
+   * // 外键
+   * references：{
+   * 
+   * // 这是对另一个模型的参考
+   *  model: Bar,
+   * 
+   * // 这是引用模型的列名
+   *  key: 'id',
+   * }
+   */
+
   attrs.id = {
     type: ID_TYPE,
     primaryKey: true
@@ -50,28 +70,6 @@ function defineModel(name, attributes) {
     type: Sequelize.BIGINT,
     allowNull: false
   };
-  // console.log('model defined for table: ' + name + '\n' + JSON.stringify(attrs, function (k, v) {
-  //   if (k === 'type') {
-  //     for (let key in Sequelize) {
-  //       if (key === 'ABSTRACT' || key === 'NUMBER') {
-  //         continue;
-  //       }
-  //       let dbType = Sequelize[key];
-  //       if (typeof dbType === 'function') {
-  //         if (v instanceof dbType) {
-  //           if (v._length) {
-  //             return `${dbType.key}(${v._length})`;
-  //           }
-  //           return dbType.key;
-  //         }
-  //         if (v === dbType) {
-  //           return dbType.key;
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return v;
-  // }, '  '));
   return sequelize.define(name, attrs, {
     tableName: name,
     timestamps: false,
@@ -94,12 +92,20 @@ function defineModel(name, attributes) {
   });
 }
 
-const TYPES = ['STRING', 'INTEGER', 'BIGINT', 'TEXT', 'DOUBLE', 'DATEONLY', 'BOOLEAN'];
+/**
+ * STRING：  字符串，默认长度255；
+ * TEXT：    长字符串；
+ * BOOLEAN： 布尔；
+ * INTEGER： 整型
+ * BIGINT：  长整型，可传参
+ * DOUBLE：  双精度浮点，可传参
+ * DATEONLY：不带时区的Date(时间戳)
+ */
+const TYPES = ['STRING', 'TEXT', 'BOOLEAN', 'INTEGER', 'BIGINT', 'DOUBLE', 'DATEONLY'];
 
 var exp = {
   defineModel: defineModel,
   sync: () => {
-    // only allow create ddl in non-production environment:
     if (process.env.NODE_ENV !== 'production') {
       // sequelize.sync({ force: true }); // 将创建表,如果表已经存在,则将其首先删除
       sequelize.sync(); // 创建该表(如果已经存在,则不执行任何操作)
