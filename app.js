@@ -1,5 +1,7 @@
 const Koa = require('koa');
 
+const cors = require('koa2-cors');
+
 const session = require('koa-session');
 
 const bodyParser = require('koa-bodyparser');
@@ -14,6 +16,14 @@ const rest = require('./rest');
 
 const app = new Koa();
 
+app.use(cors({
+  origin: false,
+  maxAge: 5,
+  credentials: true,
+  allowMethods: ['GET', 'POST', 'DELETE', 'GET'],
+  allowHeaders: ['Content-Type', 'Authorization', 'Accept']
+}));
+
 app.keys = ['some secret hurr']; // 随机字符串，加密cookie
 app.use(session({
   key: 'token', // cookie的键名
@@ -27,9 +37,7 @@ app.use(session({
   sameSite: null
 }, app));
 
-// parse user from cookie:
 app.use(async (ctx, next) => {
-  // ctx.state.user = parseUser(ctx.cookies.get('name') || '');
   await next();
 });
 

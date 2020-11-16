@@ -18,7 +18,7 @@ module.exports = {
     ctx.rest(data);
   },
   'POST /api/product': async (ctx, next) => {
-    ctx.request.body.brandId = '5d0abdf9-161f-40bc-8dc8-00d1537589df';
+    ctx.request.body.brandId = 'e892d0ef-6fd1-40f7-bc6e-54c5c7c383d7';
     const p = await ProductService.createProduct(ctx.request.body);
     ctx.rest(p);
   },

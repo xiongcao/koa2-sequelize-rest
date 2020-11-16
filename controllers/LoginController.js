@@ -2,7 +2,6 @@ const UserService = require('../service/UserService');
 const APIError = require('../rest').APIError;
 
 const crypto = require('crypto');
-const hash = crypto.createHash('md5');
 
 module.exports = {
   'GET /signin': async (ctx, next) => {
@@ -14,13 +13,16 @@ module.exports = {
   },
 
   'POST /api/signin': async (ctx, next) => {
+    const hash = crypto.createHash('md5');
     const { name, password } = ctx.request.body;
     let md5Password = hash.update(password).digest('hex'); // 加密后的密码
     const user = await UserService.findUserByNameAndPassword(name, md5Password);
     if (user) {
       // 设置session
-      ctx.session.userId = user.id;
-      ctx.session.userName = user.name;
+      ctx.session = {
+        userId: user.id,
+        userName: user.name
+      }
       ctx.rest(null, 0, '登录成功');
     } else {
       ctx.rest(user, 1, '用户名或密码错误');
@@ -28,6 +30,7 @@ module.exports = {
   },
 
   'POST /api/register': async (ctx, next) => {
+    const hash = crypto.createHash('md5');
     const { name, password } = ctx.request.body;
     const user = await UserService.findUserByName(name);
     if (user) {

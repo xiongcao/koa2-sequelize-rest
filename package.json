@@ -16,6 +16,7 @@
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^9.4.0",
     "koa-session": "^6.1.0",
+    "koa2-cors": "^2.0.6",
     "mime": "^2.4.6",
     "mysql2": "^2.2.5",
     "mz": "^2.7.0",
